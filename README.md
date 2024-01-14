@@ -62,7 +62,7 @@ $ export ETH_WALLET_PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5e
 
 ### Deploy the guest to Bonsai
 
-This requires that `BONSAI_API_URL` and `BONSAI_API_KEY` be set.
+This requires that `BONSAI_API_URL` and `BONSAI_API_KEY` are set.
 
 ```console
 $ cargo run --release -- deploy
@@ -73,7 +73,7 @@ On success, the tool outputs the guest's Image ID.
 
 ### (Optional) Test the guest deployment
 
-This requires that `BONSAI_API_URL` and `BONSAI_API_KEY` be set.
+This requires that `BONSAI_API_URL` and `BONSAI_API_KEY` are set.
 
 This command will fetch a Snark receipt from Bonsai and print its contents. The output can be used to create [unit tests](https://github.com/intoverflow/risc0-on-eth/blob/main/tests/EvenNumber.sol) for the `EvenNumber` contract.
 
@@ -86,14 +86,17 @@ $ cargo run --release -- \
 
 ### Deploy the contracts
 
-This requires that `ETH_WALLET_PRIVATE_KEY` be set.
+This requires that `GUEST_IMAGE_ID` and `ETH_WALLET_PRIVATE_KEY` are set.
 
 ```console
+$ export GUEST_IMAGE_ID=a233b08506289266e2209d24fee095c44564e97eb303547c25220a7a0cd96757
 $ forge script --rpc-url http://localhost:8545 --broadcast script/Deploy.s.sol
 
 ...
 
 == Logs ==
+  Guest Image ID is
+  0xa233b08506289266e2209d24fee095c44564e97eb303547c25220a7a0cd96757
   Deployed RiscZeroGroth16Verifier to 0x5FbDB2315678afecb367f032d93F642f64180aa3
   Deployed EvenNumber to 0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512
 
@@ -111,7 +114,7 @@ $ cast call --rpc-url http://localhost:8545 \
 
 ### Update the number
 
-This requires that `BONSAI_API_URL`, `BONSAI_API_KEY`, and `ETH_WALLET_PRIVATE_KEY` be set.
+This requires that `BONSAI_API_URL`, `BONSAI_API_KEY`, and `ETH_WALLET_PRIVATE_KEY` are set.
 
 ```console
 $ cargo run --release -- \

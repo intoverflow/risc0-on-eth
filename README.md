@@ -64,13 +64,15 @@ $ forge script --rpc-url http://localhost:8545 --broadcast script/Deploy.s.sol
 ### Query the state
 
 ```console
-$ cast call --rpc-url http://localhost:8545 0xe7f1725e7734ce288f8367e1bb143e90bb3f0512 'get()(uint256)'
+$ cast call --rpc-url http://localhost:8545 \
+    0xe7f1725e7734ce288f8367e1bb143e90bb3f0512 \
+    'get()(uint256)'
 0
 ```
 
 ### Update the number
 
-This requires that `ETH_WALLET_PRIVATE_KEY` be set.
+This requires that `BONSAI_API_URL`, `BONSAI_API_KEY`, and `ETH_WALLET_PRIVATE_KEY` be set.
 
 ```console
 $ cargo run --release -- \

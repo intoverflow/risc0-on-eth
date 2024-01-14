@@ -75,12 +75,12 @@ On success, the tool outputs the guest's Image ID. We save this value to an envi
 $ export GUEST_IMAGE_ID=a233b08506289266e2209d24fee095c44564e97eb303547c25220a7a0cd96757
 ```
 
-We can optionally test the guest deployment at this time. This requires that `BONSAI_API_URL` and `BONSAI_API_KEY` are set:
+We can optionally test the guest deployment (and our environment variables) at this time:
 
 ```
 $ cargo run --release -- \
     test-vector \
-    --image-id=a233b08506289266e2209d24fee095c44564e97eb303547c25220a7a0cd96757 \
+    --image-id=${GUEST_IMAGE_ID} \
     --number=12345678
 ```
 

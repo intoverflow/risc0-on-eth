@@ -1,0 +1,20 @@
+[workspace]
+resolver = "2"
+members = [
+    "even-guests",
+    "even-host",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+
+[workspace.dependencies]
+alloy-primitives = { version = "0.4", default-features = false, features = ["rlp", "serde", "std"] }
+alloy-sol-types = { version = "0.4" }
+anyhow = { version = "1.0.75" }
+bonsai-sdk = { version = "0.5" }
+risc0-build = { version = "0.19" }
+risc0-zkvm = { version = "0.19", default-features = false }
+serde = { version = "1.0", features = ["derive", "rc"] }
+even-guests = { version = "0.1.0", path = "even-guests" }

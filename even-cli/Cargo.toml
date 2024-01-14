@@ -1,5 +1,5 @@
 [package]
-name = "even-host"
+name = "even-cli"
 version = { workspace = true }
 edition = { workspace = true }
 

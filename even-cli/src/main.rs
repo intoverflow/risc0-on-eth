@@ -6,8 +6,8 @@ use bonsai_sdk::alpha as bonsai_sdk;
 use clap::Parser;
 use risc0_zkvm::{serde::to_vec, Receipt};
 
-mod ethers;
-mod even_number;
+mod contract;
+mod tx_sender;
 mod seal;
 
 #[derive(Parser, Debug)]
@@ -32,7 +32,7 @@ async fn main() -> Result<()> {
     let args = Args::parse();
 
     let tx_sender = match std::env::var("ETH_WALLET_PRIVATE_KEY") {
-        Ok(private_key) => Some(ethers::TxSender::new(
+        Ok(private_key) => Some(tx_sender::TxSender::new(
             args.chain_id,
             &args.rpc_url,
             &private_key,
@@ -147,6 +147,7 @@ async fn main() -> Result<()> {
 
     eprintln!("Snark proof!: {snark_receipt:?}");
 
+    // Convert from Bonsai snark format to Eth snark format
     let seal = seal::Seal::abi_encode(snark_receipt.snark).context("Read seal")?;
     let post_state_digest: FixedBytes<32> = snark_receipt
         .post_state_digest
@@ -154,16 +155,20 @@ async fn main() -> Result<()> {
         .try_into()
         .context("Read post_state_digest")?;
 
-    print!("seal: ");
-    for b in &seal {
-        print!("\\x{:02x}", b);
+    // Print the seal and post_state_digest
+    {
+        print!("seal: ");
+        for b in &seal {
+            print!("\\x{:02x}", b);
+        }
+        println!("");
+        println!("post_state_digest: {}", post_state_digest);
     }
-    println!("");
-    println!("post_state_digest: {}", post_state_digest);
 
+    // Send the transaction
     if let Some(tx_sender) = tx_sender {
         tx_sender
-            .send(even_number::set(args.number, seal, post_state_digest))
+            .send(contract::set(args.number, seal, post_state_digest))
             .await?;
     }
 

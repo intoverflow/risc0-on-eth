@@ -1477,14 +1477,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "even-guests"
-version = "0.1.0"
-dependencies = [
- "risc0-build",
-]
-
-[[package]]
-name = "even-host"
+name = "even-cli"
 version = "0.1.0"
 dependencies = [
  "alloy-primitives",
@@ -1502,6 +1495,13 @@ dependencies = [
  "log",
  "risc0-zkvm",
  "tokio",
+]
+
+[[package]]
+name = "even-guests"
+version = "0.1.0"
+dependencies = [
+ "risc0-build",
 ]
 
 [[package]]

@@ -81,3 +81,12 @@ $ cargo run --release -- \
     --contract=e7f1725E7734CE288F8367e1Bb143E90bb3F0512 \
     --number=12345678
 ```
+
+Query the state to see that the value has been updated:
+
+```console
+$ cast call --rpc-url http://localhost:8545 \
+    0xe7f1725e7734ce288f8367e1bb143e90bb3f0512 \
+    'get()(uint256)'
+12345678
+```

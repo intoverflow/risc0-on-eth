@@ -55,13 +55,13 @@ async fn main() -> Result<()> {
         Command::TestVector { image_id, number } => {
             let (seal, post_state_digest) = prove(image_id, number).await?;
 
-            println!("number: {}", number);
-            print!("seal: ");
+            println!("uint256 number = {};", number);
+            print!("bytes memory seal = \"");
             for b in &seal {
                 print!("\\x{:02x}", b);
             }
-            println!("");
-            println!("post_state_digest: {}", post_state_digest);
+            println!("\";");
+            println!("bytes32 postStateDigest = {};", post_state_digest);
         }
         Command::SendTx {
             image_id,

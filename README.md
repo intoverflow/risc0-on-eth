@@ -71,13 +71,13 @@ a233b08506289266e2209d24fee095c44564e97eb303547c25220a7a0cd96757
 
 On success, the tool outputs the guest's Image ID. We save this value to an environment variable. This will allow us to deploy our contracts.
 
-```
+```console
 $ export GUEST_IMAGE_ID=a233b08506289266e2209d24fee095c44564e97eb303547c25220a7a0cd96757
 ```
 
 We can optionally test the guest deployment (and our environment variables) at this time:
 
-```
+```console
 $ cargo run --release -- \
     test-vector \
     --image-id=${GUEST_IMAGE_ID} \

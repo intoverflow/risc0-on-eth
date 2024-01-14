@@ -54,7 +54,7 @@ Private Keys
 Listening on 127.0.0.1:8545
 ```
 
-### Set your private key
+We now save our private key into an environment variable. This will allow us to deploy our contracts and submit transactions.
 
 ```console
 $ export ETH_WALLET_PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
@@ -62,20 +62,20 @@ $ export ETH_WALLET_PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5e
 
 ### Deploy the guest to Bonsai
 
-This requires that `BONSAI_API_URL` and `BONSAI_API_KEY` are set.
+This requires that `BONSAI_API_URL` and `BONSAI_API_KEY` are set:
 
 ```console
 $ cargo run --release -- deploy
 a233b08506289266e2209d24fee095c44564e97eb303547c25220a7a0cd96757
 ```
 
-On success, the tool outputs the guest's Image ID.
+On success, the tool outputs the guest's Image ID. We save this value to an environment variable. This will allow us to deploy our contracts.
 
-### (Optional) Test the guest deployment
+```
+$ export GUEST_IMAGE_ID=a233b08506289266e2209d24fee095c44564e97eb303547c25220a7a0cd96757
+```
 
-This requires that `BONSAI_API_URL` and `BONSAI_API_KEY` are set.
-
-This command will fetch a Snark receipt from Bonsai and print its contents. The output can be used to create [unit tests](https://github.com/intoverflow/risc0-on-eth/blob/main/tests/EvenNumber.sol) for the `EvenNumber` contract.
+We can optionally test the guest deployment at this time. This requires that `BONSAI_API_URL` and `BONSAI_API_KEY` are set:
 
 ```
 $ cargo run --release -- \
@@ -84,12 +84,13 @@ $ cargo run --release -- \
     --number=12345678
 ```
 
+This command given above fetches a Snark receipt from Bonsai and print its contents. The output can be used to create [unit tests](https://github.com/intoverflow/risc0-on-eth/blob/main/tests/EvenNumber.sol) for the `EvenNumber` contract.
+
 ### Deploy the contracts
 
-This requires that `GUEST_IMAGE_ID` and `ETH_WALLET_PRIVATE_KEY` are set.
+This requires that `GUEST_IMAGE_ID` and `ETH_WALLET_PRIVATE_KEY` are set:
 
 ```console
-$ export GUEST_IMAGE_ID=a233b08506289266e2209d24fee095c44564e97eb303547c25220a7a0cd96757
 $ forge script --rpc-url http://localhost:8545 --broadcast script/Deploy.s.sol
 
 ...
@@ -103,7 +104,9 @@ $ forge script --rpc-url http://localhost:8545 --broadcast script/Deploy.s.sol
 ...
 ```
 
-### Query the state
+### Interact with the contract
+
+First, let's query the contract's state:
 
 ```console
 $ cast call --rpc-url http://localhost:8545 \
@@ -112,9 +115,7 @@ $ cast call --rpc-url http://localhost:8545 \
 0
 ```
 
-### Update the number
-
-This requires that `BONSAI_API_URL`, `BONSAI_API_KEY`, and `ETH_WALLET_PRIVATE_KEY` are set.
+Now let's update its state. We can do this by submitting a transaction. This requires that `BONSAI_API_URL`, `BONSAI_API_KEY`, and `ETH_WALLET_PRIVATE_KEY` are set:
 
 ```console
 $ cargo run --release -- \
@@ -126,7 +127,7 @@ $ cargo run --release -- \
     --number=12345678
 ```
 
-Query the state to see that the value has been updated:
+Lastly, let's query the state one more time to see that the value has been updated:
 
 ```console
 $ cast call --rpc-url http://localhost:8545 \

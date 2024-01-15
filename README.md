@@ -60,6 +60,17 @@ We now save our private key into an environment variable. This will allow us to 
 $ export ETH_WALLET_PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
 ```
 
+### Build the guest
+
+```console
+$ cargo risczero build --manifest-path even-guests/is-even/Cargo.toml
+
+...
+
+ELFs ready at:
+ImageID: b5738a9099282bf37dc46cac14865b81dd9dd230467b6c50a78e668458b886b5 - "target/riscv-guest/riscv32im-risc0-zkvm-elf/docker/is_even/is-even"
+```
+
 ### Deploy the guest to Bonsai
 
 This requires that `BONSAI_API_URL` and `BONSAI_API_KEY` are set:

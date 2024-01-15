@@ -60,19 +60,32 @@ We now save our private key into an environment variable. This will allow us to 
 $ export ETH_WALLET_PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
 ```
 
-### Deploy the guest to Bonsai
+### Build the guest and deploy to Bonsai
 
-This requires that `BONSAI_API_URL` and `BONSAI_API_KEY` are set:
+First we build the guest:
 
 ```console
-$ cargo run --release -- deploy
-a233b08506289266e2209d24fee095c44564e97eb303547c25220a7a0cd96757
+$ cargo risczero build --manifest-path even-guests/is-even/Cargo.toml
+
+...
+
+ELFs ready at:
+ImageID: b5738a9099282bf37dc46cac14865b81dd9dd230467b6c50a78e668458b886b5 - "target/riscv-guest/riscv32im-risc0-zkvm-elf/docker/is_even/is-even"
+```
+
+Once the guest has been built, we can deploy it to Bonsai. This requires that `BONSAI_API_URL` and `BONSAI_API_KEY` are set:
+
+```console
+$ cargo run --release -- \
+    deploy \
+    --guest-elf=target/riscv-guest/riscv32im-risc0-zkvm-elf/docker/is_even/is-even
+b5738a9099282bf37dc46cac14865b81dd9dd230467b6c50a78e668458b886b5
 ```
 
 On success, the tool outputs the guest's Image ID. We save this value to an environment variable. This will allow us to deploy our contracts.
 
 ```console
-$ export GUEST_IMAGE_ID=a233b08506289266e2209d24fee095c44564e97eb303547c25220a7a0cd96757
+$ export GUEST_IMAGE_ID=b5738a9099282bf37dc46cac14865b81dd9dd230467b6c50a78e668458b886b5
 ```
 
 We can optionally test the guest deployment (and our environment variables) at this time:
@@ -97,7 +110,7 @@ $ forge script --rpc-url http://localhost:8545 --broadcast script/Deploy.s.sol
 
 == Logs ==
   Guest Image ID is
-  0xa233b08506289266e2209d24fee095c44564e97eb303547c25220a7a0cd96757
+  0xb5738a9099282bf37dc46cac14865b81dd9dd230467b6c50a78e668458b886b5
   Deployed RiscZeroGroth16Verifier to 0x5FbDB2315678afecb367f032d93F642f64180aa3
   Deployed EvenNumber to 0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512
 
@@ -120,7 +133,7 @@ Now let's update its state. We can do this by submitting a transaction. This req
 ```console
 $ cargo run --release -- \
     send-tx \
-    --image-id=a233b08506289266e2209d24fee095c44564e97eb303547c25220a7a0cd96757 \
+    --image-id=${GUEST_IMAGE_ID} \
     --chain-id=31337 \
     --rpc-url=http://localhost:8545 \
     --contract=e7f1725E7734CE288F8367e1Bb143E90bb3F0512 \

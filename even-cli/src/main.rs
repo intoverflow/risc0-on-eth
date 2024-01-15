@@ -4,6 +4,7 @@ use alloy_primitives::{FixedBytes, U256};
 use anyhow::{ensure, Context, Result};
 use bonsai_sdk::alpha as bonsai_sdk;
 use clap::{Parser, Subcommand};
+use hex::FromHex;
 use risc0_zkvm::{serde::to_vec, Receipt};
 
 mod contract;
@@ -19,7 +20,10 @@ struct Args {
 
 #[derive(Clone, Debug, Subcommand)]
 enum Command {
-    Deploy,
+    Deploy {
+        #[clap(short, long, require_equals = true)]
+        guest_elf: Option<String>,
+    },
     TestVector {
         #[clap(short, long, require_equals = true)]
         image_id: String,
@@ -51,7 +55,7 @@ async fn main() -> Result<()> {
     let args = Args::parse();
 
     match args.command {
-        Command::Deploy => deploy().await?,
+        Command::Deploy { guest_elf } => deploy(guest_elf).await?,
         Command::TestVector { image_id, number } => {
             let (seal, post_state_digest) = prove(image_id, number).await?;
 
@@ -92,12 +96,17 @@ fn compute_image_id(elf: &[u8]) -> String {
     hex::encode(image.compute_id())
 }
 
-async fn deploy() -> Result<()> {
+async fn deploy(guest_elf: Option<String>) -> Result<()> {
     let client = bonsai_sdk::Client::from_env(risc0_zkvm::VERSION)?;
 
     // Compute the image_id, then upload the ELF with the image_id as its key.
-    let image_id = compute_image_id(even_guests::IS_EVEN_ELF);
-    client.upload_img(&image_id, even_guests::IS_EVEN_ELF.to_vec())?;
+    let elf_bytes = if let Some(guest_elf) = guest_elf {
+        std::fs::read(guest_elf)?
+    } else {
+        even_guests::IS_EVEN_ELF.to_vec()
+    };
+    let image_id = compute_image_id(elf_bytes.as_slice());
+    client.upload_img(&image_id, elf_bytes)?;
     println!("{}", image_id);
 
     Ok(())
@@ -114,7 +123,7 @@ async fn prove(image_id: String, number: U256) -> Result<(Vec<u8>, FixedBytes<32
     };
 
     // Fetch the receipt
-    let session = client.create_session(image_id, input_id)?;
+    let session = client.create_session(image_id.clone(), input_id)?;
     eprintln!("Created session: {}", session.uuid);
     let receipt = loop {
         let res = session.status(&client)?;
@@ -149,7 +158,7 @@ async fn prove(image_id: String, number: U256) -> Result<(Vec<u8>, FixedBytes<32
     // Verify the receipt
     {
         receipt
-            .verify(even_guests::IS_EVEN_ID)
+            .verify(risc0_zkvm::sha::Digest::from_hex(&image_id)?)
             .expect("Receipt verification failed");
         println!("Journal digest: {:?}", receipt.get_metadata()?.output);
 
